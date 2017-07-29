@@ -1,0 +1,21 @@
+{{define "login"}}
+{{template "header"}}
+    <div class="container">
+        <form class="form-horizontal" role="form" action="login" method="post">
+            <div class="form-group">
+                <label for="inputSuccess" class="control-label">学号:</label>
+                <input type="text" class="form-control" name="username">
+            </div>
+            <div class="form-group">
+                <label for="inputPassword3" class="control-label">密码:</label>
+                <input type="password" class="form-control" name="password">
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-success  active">登录</button>
+            </div>
+        </form>
+        <script src="static/js/jquery-2.0.3.js"></script>
+        <script src="static/js/bootstrap.min.js"></script>
+    </div>
+    {{template "footer"}}
+    {{end}}
