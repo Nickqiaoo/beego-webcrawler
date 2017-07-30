@@ -1,4 +1,4 @@
-package main
+package controller
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func home(w http.ResponseWriter, r *http.Request) {
+func Home(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("method", r.Method)
 	if r.Method == "GET" {
 		if strings.HasPrefix(r.URL.Path, "/static") {
@@ -23,19 +23,13 @@ func home(w http.ResponseWriter, r *http.Request) {
 		t.ExecuteTemplate (w,"login",nil)
 	}
 }
-func login(w http.ResponseWriter, r *http.Request) {
+func Login(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		r.ParseForm()
 		fmt.Println("username:", r.Form["username"])
 		fmt.Println("password:", r.Form["password"])
+		spider(r.Form["username"][0],r.Form["password"][0])
 		fmt.Fprintf(w, "Success")
 	}
 }
-func main() {
-	http.HandleFunc("/", home)
-	http.HandleFunc("/login", login)
-	err := http.ListenAndServe(":9090", nil)
-	if err != (nil) {
-		log.Fatal("ListenAndServe:", err)
-	}
-}
+
