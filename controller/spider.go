@@ -1,11 +1,10 @@
-package controller 
+package controller
 
 import (
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"net/http/cookiejar"
 	"net/url"
 	"os"
 	"strings"
@@ -13,29 +12,10 @@ import (
 	"github.com/axgle/mahonia"
 )
 
-func spider(username string, password string) {
+func spider(username string, password string, imagecode string, c *http.Client) {
 	url1 := "http://xk1.ahu.cn/default2.aspx"
-	url2 := "http://xk1.ahu.cn/CheckCode.aspx?"
+	//url2 := "http://xk1.ahu.cn/CheckCode.aspx?"
 	//url3 := "http://xk1.ahu.cn/xs_main.aspx?xh=P71514011"
-	jar, _ := cookiejar.New(nil)
-	c := &http.Client{
-		//CheckRedirect: func(req *http.Request, via []*http.Request) error {
-		//  return http.ErrUseLastResponse
-		// },
-		Jar: jar,
-	}
-	//GE验证码
-	file1, err := os.OpenFile("image.jpg", os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file1.Close()
-	req, err := c.Get(url2)
-	image, _ := ioutil.ReadAll(req.Body)
-	file1.Write(image)
-	var imagecode string
-	fmt.Println("请输入验证码")
-	fmt.Scanf("%s", &imagecode)
 	v := url.Values{}
 	enc := mahonia.NewEncoder("gbk")
 	but := enc.ConvertString("学生")
@@ -59,6 +39,7 @@ func spider(username string, password string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	file3, err := os.OpenFile("spider.txt", os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
 	if err != nil {
 		log.Fatal(err)
