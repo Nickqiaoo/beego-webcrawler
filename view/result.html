@@ -1,0 +1,30 @@
+{{define "result"}} {{template "header"}}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+            <p>{{.Jd}}</p>
+            <div class="table-responsive">
+                <table class="table table-condensed table-bordered">
+                    <caption>{{.Name}}</caption>
+                    <thead>
+                        <tr>
+                            <td>课程</td>
+                            <td>学分</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range $i,$v:=.Res}}
+                        <tr class="success">
+                            <td>{{$i}}</td>
+                            <td>{{$v}}</td>
+                        </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{template "footer"}} {{end}}
