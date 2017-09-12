@@ -93,7 +93,6 @@ func spider(username string, password string, imagecode string, c *http.Client) 
 		return http.ErrUseLastResponse
 	}*/
 	response, err = c.Do(r)
-	fmt.Println(c.Jar.Cookies(u))
 	if err != nil {
 		log.Fatal(err)
 	}

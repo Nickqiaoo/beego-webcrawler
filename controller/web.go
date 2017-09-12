@@ -10,6 +10,8 @@ import (
 	"os"
 	"strings"
 	"net/url"
+	"math/rand"
+	"time"
 )
 
 var Url2 = "http://xk1.ahu.cn/CheckCode.aspx?"
@@ -42,9 +44,16 @@ func Home(w http.ResponseWriter, r *http.Request) {
 				defer file1.Close()
 				req, err := c.Get(Url2)
 				fmt.Println(c.Jar.Cookies(u))
-				cookie := http.Cookie{Name: "testcookiename", Value: "testcookievalue", Path: "/", MaxAge: 86400}
-				Ma[cookie.Name]=c.Jar.Cookies(u)
+				
+				
+				coo,_:=r.Cookie("cookiename")
+				_,found:=Ma[coo.Value]
+				if found==false {
+				cookie := http.Cookie{Name: "cookiename", Value: GetString(5) , Path: "/", MaxAge: 86400}
+				fmt.Println(cookie.Value)
+				Ma[cookie.Value]=c.Jar.Cookies(u)
 				http.SetCookie(w, &cookie)
+				}
 				//c.Jar,_=cookiejar.New(nil)
 				image, _ := ioutil.ReadAll(req.Body)
 				file1.Write(image)
@@ -63,10 +72,12 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		t.ExecuteTemplate(w, "login", nil)
 	}
 	if r.Method == "POST" {
-		for k,v:= range(Ma){
-			fmt.Println(k,v)
-		}
-		c.Jar.SetCookies(u,Ma["testcookiename"])
+		//for k,v:= range(Ma){
+		//	fmt.Println(k,v)
+		//}
+		ccookie,_:=r.Cookie("cookiename")
+		c.Jar.SetCookies(u,Ma[ccookie.Value])
+		fmt.Println(ccookie.Value)
 		r.ParseForm()
 		fmt.Println("username:", r.Form["username"])
 		fmt.Println("password:", r.Form["password"])
@@ -75,7 +86,19 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		if err != (nil) {
 			log.Fatal("template:", err)
 		}
+		delete(Ma,ccookie.Value)
 		t.ExecuteTemplate(w, "result", *result)
 		//fmt.Fprintf(w, "Success")
 	}
 }
+
+func GetString(le int) string{
+	str := "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	bytes := []byte(str)
+	result := []byte{}
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	for i := 0; i < le; i++ {
+	   result = append(result, bytes[r.Intn(len(bytes))])
+	}
+	return string(result)
+ }
