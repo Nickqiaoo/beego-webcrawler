@@ -9,11 +9,9 @@ import (
 	"net/http/cookiejar"
 	"os"
 	"strings"
-	"sync"
 	"net/url"
 )
 
-var mutex sync.Mutex
 var Url2 = "http://xk1.ahu.cn/CheckCode.aspx?"
 var Ma map[string] []*http.Cookie
 
