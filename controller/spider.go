@@ -13,6 +13,7 @@ import (
 )
 
 type Result struct {
+	Num string
 	Name string
 	Xf string
 	Res  map[string]string
@@ -49,17 +50,24 @@ func spider(username string, password string, imagecode string, c *http.Client) 
 	doc := decoder.NewReader(response.Body)
 	result, err := goquery.NewDocumentFromReader(doc)
 	checkErr(err)
+	//cname:=result.Find("title").Text()
+	//if strings.HasPrefix(cname,"欢迎"){
+	//	return nil
+	//}
 	cname :=result.Find("#xhxm").Text()
 	cname= strings.TrimRight(cname,"同学")
 	cname= encoder.ConvertString(cname)
 	resulturl:="http://xk1.ahu.cn/xscjcx.aspx?xh="+username+"&xm="+url.QueryEscape(cname)+"&gnmkdm=N121605"
 	fmt.Println(resulturl)
 	r,_=http.NewRequest("GET",resulturl,nil)
-	//r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	
 	r.Header.Add("Referer", "http://xk1.ahu.cn/xs_main.aspx?xh="+username)
 	r.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.104 Safari/537.36")
 	response,err=c.Do(r)
-	checkErr(err)
+	//checkErr(err)
+	if err!=nil {
+		return nil
+	}
 
 	doc = decoder.NewReader(response.Body)
 	result, _ = goquery.NewDocumentFromReader(doc)
@@ -99,7 +107,7 @@ func spider(username string, password string, imagecode string, c *http.Client) 
 	fmt.Println(response.Status)
 	ma,xf,jd := match(response)
 	fmt.Println(jd)
-	return &Result{Name: username, Xf:xf,Res: ma, Jd: jd}
+	return &Result{Name:decoder.ConvertString(cname) ,Num: username, Xf:xf,Res: ma, Jd: jd}
 }
 
 func match(response1 *http.Response) (map[string]string, string,string) {
@@ -114,8 +122,7 @@ func match(response1 *http.Response) (map[string]string, string,string) {
 	num, err := file.Write(html)
 	if num != len(html) {
 		log.Fatal(err)
-	}
-	checkErr(err)*/
+	}*/
 	result.Find(".datelist").Eq(0).Find("tr").Each(func(i int, s *goquery.Selection) {
 		if i > 0 {
 			ma[s.Find("td").Eq(0).Text()] = s.Find("td").Eq(2).Text()
