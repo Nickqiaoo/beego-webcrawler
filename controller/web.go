@@ -16,6 +16,7 @@ import (
 
 var Url2 = "http://xk1.ahu.cn/CheckCode.aspx?"
 var Ma map[string] []*http.Cookie
+//var jar,_=cookiejar.New(nil)
 
 //  Home
 func Home(w http.ResponseWriter, r *http.Request) {
@@ -32,6 +33,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println("method", r.Method)
 	t, err := template.ParseFiles("view/result.html", "view/footer.html", "view/header.html")
+	checkErr(err)
 	if r.Method == "GET" {
 		if strings.HasPrefix(r.URL.Path, "/static") {
 			fmt.Println(r.URL.Path)
@@ -42,14 +44,20 @@ func Home(w http.ResponseWriter, r *http.Request) {
 					log.Fatal(err)
 				}
 				defer file1.Close()
-				req, err := c.Get(Url2)
-				fmt.Println(c.Jar.Cookies(u))
-				
 				
 				coo,_:=r.Cookie("cookiename")
-				_,found:=Ma[coo.Value]
-				if found==false {
-				cookie := http.Cookie{Name: "cookiename", Value: GetString(5) , Path: "/", MaxAge: 86400}
+				fmt.Println(coo)
+				var found bool
+				if coo!=nil{
+				_,found=Ma[coo.Value]
+				if found{
+					c.Jar.SetCookies(u,Ma[coo.Value])
+				}
+				}
+				req, err := c.Get(Url2)
+				fmt.Println(c.Jar.Cookies(u))
+				if coo==nil ||!found{
+				cookie := http.Cookie{Name: "cookiename", Value: GetString(5) , Path: "/", MaxAge: 800}
 				fmt.Println(cookie.Value)
 				Ma[cookie.Value]=c.Jar.Cookies(u)
 				http.SetCookie(w, &cookie)
@@ -72,9 +80,9 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		t.ExecuteTemplate(w, "login", nil)
 	}
 	if r.Method == "POST" {
-		//for k,v:= range(Ma){
-		//	fmt.Println(k,v)
-		//}
+		for k,v:= range(Ma){
+			fmt.Println(k,":",v)
+		}
 		ccookie,_:=r.Cookie("cookiename")
 		c.Jar.SetCookies(u,Ma[ccookie.Value])
 		fmt.Println(ccookie.Value)
@@ -83,10 +91,11 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("password:", r.Form["password"])
 		fmt.Println("yzm", r.Form["yzm"])
 		result:=spider(r.Form["username"][0], r.Form["password"][0], r.Form["yzm"][0], &c )
-		if err != (nil) {
-			log.Fatal("template:", err)
-		}
 		delete(Ma,ccookie.Value)
+		if result==nil{
+			w.Write([]byte("出现错误请刷新重新登陆"))
+			return 
+		}
 		t.ExecuteTemplate(w, "result", *result)
 		//fmt.Fprintf(w, "Success")
 	}
