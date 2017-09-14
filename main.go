@@ -1,18 +1,19 @@
 package main
 
-import(
-	"server/controller"
-	"net/http"
+import (
 	"log"
+	"net/http"
+	"server/controller"
 )
 
 func main() {
-	http.HandleFunc("/",controller.Home)
+	http.HandleFunc("/", controller.Home)
 	err := http.ListenAndServe(":9090", nil)
 	if err != (nil) {
 		log.Fatal("ListenAndServe:", err)
 	}
 }
+
 /*
 package main
 
