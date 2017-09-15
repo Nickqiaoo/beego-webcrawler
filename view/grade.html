@@ -1,0 +1,36 @@
+{{define "grade"}}
+{{template "header"}}
+
+<div class="container">
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                <div class="table-responsive">
+                    <table class="table table-condensed table-bordered">
+                        <caption>{{.Num}} {{.Name}}</caption>
+                        <thead>
+                            <tr>
+                                <td>课程名称</td>
+                                <td>课程性质</td>
+                                <td>学分</td>
+                                <td>绩点</td>
+                                <td>成绩</td>
+                                <td>开课学院</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{range .Graderesult}}
+                            <tr class="success">
+                                {{range .}}
+                                <td>{{.}}</td>
+                                {{end}}
+                            </tr>
+                            {{end}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{{template "footer"}}
+{{end}}

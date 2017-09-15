@@ -1,0 +1,35 @@
+{{define "welcome"}} {{template "header"}}
+
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-md-4 col-md-offset-4">
+            <div class="jumbotron">
+                <div class="col-xs-offset-1 col-md-offset-0">
+                    <h2>欢迎您{{.Name}}同学</h2>
+                </div>
+                <div class="col-xs-offset-2 col-md-offset-2">
+                    <form id="sub" class="form-inline" role="form" method="post" >
+                        <input type="hidden" class="form-control" name=name value={{.Name}}>
+                        <input type="hidden" class="form-control" name=num value={{.Num}}>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success active" onclick="credit()">学分查询</button>
+                            <button type="submit" class="btn btn-success active" onclick="grade()">成绩查询</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script type="text/javascript">
+    function grade(){
+           document.forms.sub.action="/grade";
+           document.forms.sub.submit();
+    }
+    function credit(){
+           document.forms.sub.action="/credit";
+           document.forms.sub.submit();
+    }
+    </script>
+{{template "footer"}} {{end}}
