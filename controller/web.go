@@ -16,8 +16,8 @@ import (
 
 var Url2 = "http://xk1.ahu.cn/CheckCode.aspx?"
 
-//  Home
-func Home(w http.ResponseWriter, r *http.Request) {
+// Welcome 登录界面
+func Welcome(w http.ResponseWriter, r *http.Request) {
 	jar, _ := cookiejar.New(nil)
 	u, _ := url.Parse(Url2)
 	c := http.Client{
@@ -27,11 +27,9 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		Jar: jar,
 	}
 	fmt.Println("method", r.Method)
-	t, err := template.ParseFiles("view/result.html", "view/footer.html", "view/header.html")
-	checkErr(err)
 	if r.Method == "GET" {
+		fmt.Println(r.URL.Path)
 		if strings.HasPrefix(r.URL.Path, "/static") {
-			fmt.Println(r.URL.Path)
 			if strings.HasPrefix(r.URL.Path, "/static/im") {
 				//GE验证码
 				file1, err := os.OpenFile("./static/image.jpg", os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
@@ -62,6 +60,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		t.ExecuteTemplate(w, "login", nil)
 	}
 	if r.Method == "POST" {
+		var err error
 		cookie := make([]*http.Cookie, 1)
 		cookie[0], err = r.Cookie("ASP.NET_SessionId")
 		if err != nil {
@@ -74,13 +73,16 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("username:", r.Form["username"])
 		fmt.Println("password:", r.Form["password"])
 		fmt.Println("yzm", r.Form["yzm"])
-		result := spider(r.Form["username"][0], r.Form["password"][0], r.Form["yzm"][0], &c)
+		info := spider(r.Form["username"][0], r.Form["password"][0], r.Form["yzm"][0], &c)
 		//delete(Ma, ccookie.Value)
-		if result == nil {
+		if info == nil {
 			fault(&w)
 			return
 		}
-		t.ExecuteTemplate(w, "result", *result)
+		t, err := template.ParseFiles("view/welcome.html", "view/footer.html", "view/header.html")
+		checkErr(err)
+		err = t.ExecuteTemplate(w, "welcome", *info)
+		checkErr(err)
 	}
 }
 

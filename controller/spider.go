@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"net/url"
 	//"os"
+	"html/template"
+	"net/http/cookiejar"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -21,7 +23,18 @@ type Result struct {
 	Jd   string
 }
 
-func spider(username string, password string, imagecode string, c *http.Client) *Result {
+type Info struct {
+	Name string
+	Num  string
+}
+
+type Grade struct{
+	Num  string
+	Name string
+	Graderesult [][]string 
+}
+
+func spider(username string, password string, imagecode string, c *http.Client) *Info {
 	u, _ := url.Parse(Url2)
 	fmt.Println(c.Jar.Cookies(u))
 	url1 := "http://xk1.ahu.cn/default2.aspx"
@@ -46,73 +59,223 @@ func spider(username string, password string, imagecode string, c *http.Client) 
 	r.Header.Add("Referer", "http://xk1.ahu.cn/default2.aspx")
 	r.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.104 Safari/537.36")
 	response, err := c.Do(r)
-	fmt.Println("主页",response.Status)
+	fmt.Println("主页", response.Status)
 	checkErr(err)
 
 	doc := decoder.NewReader(response.Body)
 	result, err := goquery.NewDocumentFromReader(doc)
 	checkErr(err)
-	cname:=result.Find("title").Text()
-	if strings.HasPrefix(cname,"欢迎"){
-	return nil
+	cname := result.Find("title").Text()
+	if strings.HasPrefix(cname, "欢迎") {
+		fmt.Println("主页获取错误")
+		return nil
 	}
 	cname = result.Find("#xhxm").Text()
 	cname = strings.TrimRight(cname, "同学")
-	cname = encoder.ConvertString(cname)
-	resulturl := "http://xk1.ahu.cn/xscjcx.aspx?xh=" + username + "&xm=" + url.QueryEscape(cname) + "&gnmkdm=N121605"
-	fmt.Println(resulturl)
-	r, _ = http.NewRequest("GET", resulturl, nil)
-
-	r.Header.Add("Referer", "http://xk1.ahu.cn/xs_main.aspx?xh="+username)
-	r.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.104 Safari/537.36")
-	response, err = c.Do(r)
-	//checkErr(err)
-	if err != nil {
-		return nil
-	}
-	fmt.Println(response.Status)
-	if response.StatusCode!=200{
-		return nil
-	}
-
-	doc = decoder.NewReader(response.Body)
-	result, _ = goquery.NewDocumentFromReader(doc)
-	view, _ := result.Find("#__VIEWSTATE").Attr("value")
-	event, _ := result.Find("#__EVENTVALIDATION").Attr("value")
-	v = url.Values{}
-	v.Add("Button1", encoder.ConvertString("成绩统计"))
-	v.Add("__EVENTTARGET", "")
-	v.Add("__EVENTARGUMENT", "")
-	v.Add("__VIEWSTATE", view)
-	v.Add("hidLanguage", "")
-	v.Add("ddlXN", "")
-	v.Add("ddlXQ", "")
-	v.Add("ddl_kcxz", "")
-	v.Add("__EVENTVALIDATION", event)
-
-	body = strings.NewReader(v.Encode())
-	r, err = http.NewRequest("POST", resulturl, body)
-	checkErr(err)
-	r.Header.Add("Referer", resulturl)
-	r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	r.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.104 Safari/537.36")
-	r.Header.Add("Host", "xk1.ahu.cn")
-	r.Header.Add("Origin", "http://xk1.ahu.cn")
-	/*for k,va :=range r.Header{
-		fmt.Println(k,va)
-	}
-	c.CheckRedirect = func(req *http.Request, via []*http.Request) error {
-		return http.ErrUseLastResponse
-	}*/
-	response, err = c.Do(r)
-	checkErr(err)
-	fmt.Println(response.Status)
-	ma, xf, jd := match(response)
-	fmt.Println(jd)
-	return &Result{Name: decoder.ConvertString(cname), Num: username, Xf: xf, Res: ma, Jd: jd}
+	return &Info{Name: cname, Num: username}
 }
 
-func match(response1 *http.Response) (map[string]string, string, string) {
+// Querycredit 查询学分绩点
+func Querycredit(w http.ResponseWriter, r *http.Request) {
+	jar, _ := cookiejar.New(nil)
+	u, _ := url.Parse(Url2)
+	c := http.Client{
+		Jar: jar,
+	}
+	fmt.Println("method", r.Method)
+	if r.Method == "POST" {
+		var err error
+		cookie := make([]*http.Cookie, 1)
+		cookie[0], err = r.Cookie("ASP.NET_SessionId")
+		if err != nil {
+			fault(&w)
+			return
+		}
+		fmt.Println(cookie[0].Value)
+		c.Jar.SetCookies(u, cookie)
+		r.ParseForm()
+		fmt.Println("name:", r.Form["name"])
+		fmt.Println("num:", r.Form["num"])
+
+		encoder := mahonia.NewEncoder("gbk")
+		decoder := mahonia.NewDecoder("gbk")
+		cname := encoder.ConvertString(r.Form["name"][0])
+		resulturl := "http://xk1.ahu.cn/xscjcx.aspx?xh=" + r.Form["num"][0] + "&xm=" + url.QueryEscape(cname) + "&gnmkdm=N121605"
+		fmt.Println(resulturl)
+		req, _ := http.NewRequest("GET", resulturl, nil)
+
+		req.Header.Add("Referer", "http://xk1.ahu.cn/xs_main.aspx?xh="+r.Form["num"][0])
+		req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.104 Safari/537.36")
+		response, err := c.Do(req)
+		//checkErr(err)
+		if err != nil {
+			fault(&w)
+			return
+		}
+		fmt.Println("查询页", response.Status)
+		if response.StatusCode != 200 {
+			fault(&w)
+			return
+		}
+
+		doc := decoder.NewReader(response.Body)
+		result, _ := goquery.NewDocumentFromReader(doc)
+		view, _ := result.Find("#__VIEWSTATE").Attr("value")
+		event, _ := result.Find("#__EVENTVALIDATION").Attr("value")
+		v := url.Values{}
+		v.Add("Button1", encoder.ConvertString("成绩统计"))
+		v.Add("__EVENTTARGET", "")
+		v.Add("__EVENTARGUMENT", "")
+		v.Add("__VIEWSTATE", view)
+		v.Add("hidLanguage", "")
+		v.Add("ddlXN", "")
+		v.Add("ddlXQ", "")
+		v.Add("ddl_kcxz", "")
+		v.Add("__EVENTVALIDATION", event)
+
+		body := strings.NewReader(v.Encode())
+		req, err = http.NewRequest("POST", resulturl, body)
+		checkErr(err)
+		req.Header.Add("Referer", resulturl)
+		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+		req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.104 Safari/537.36")
+		/*for k,va :=range r.Header{
+			fmt.Println(k,va)
+		}
+		c.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		}*/
+		response, err = c.Do(req)
+		checkErr(err)
+		fmt.Println("结果页", response.Status)
+		ma, xf, jd := matchcredit(response)
+		fmt.Println(jd)
+		t, err := template.ParseFiles("view/credit.html", "view/footer.html", "view/header.html")
+		checkErr(err)
+		err = t.ExecuteTemplate(w, "credit", Result{Name: decoder.ConvertString(cname), Num: r.Form["num"][0], Xf: xf, Res: ma, Jd: jd})
+		checkErr(err)
+	} else if r.Method == "GET" {
+		fault(&w)
+		return
+	}
+}
+
+
+// Querygrade 查询成绩
+func Querygrade(w http.ResponseWriter, r *http.Request) {
+	jar, _ := cookiejar.New(nil)
+	u, _ := url.Parse(Url2)
+	c := http.Client{
+		Jar: jar,
+	}
+	fmt.Println("method", r.Method)
+	if r.Method == "POST" {
+		var err error
+		cookie := make([]*http.Cookie, 1)
+		cookie[0], err = r.Cookie("ASP.NET_SessionId")
+		if err != nil {
+			fault(&w)
+			return
+		}
+		fmt.Println(cookie[0].Value)
+		c.Jar.SetCookies(u, cookie)
+		r.ParseForm()
+		fmt.Println("name:", r.Form["name"])
+		fmt.Println("num:", r.Form["num"])
+
+		encoder := mahonia.NewEncoder("gbk")
+		decoder := mahonia.NewDecoder("gbk")
+		cname := encoder.ConvertString(r.Form["name"][0])
+		resulturl := "http://xk1.ahu.cn/xscjcx.aspx?xh=" + r.Form["num"][0] + "&xm=" + url.QueryEscape(cname) + "&gnmkdm=N121605"
+		fmt.Println(resulturl)
+		req, _ := http.NewRequest("GET", resulturl, nil)
+
+		req.Header.Add("Referer", "http://xk1.ahu.cn/xs_main.aspx?xh="+r.Form["num"][0])
+		req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.104 Safari/537.36")
+		response, err := c.Do(req)
+		//checkErr(err)
+		if err != nil {
+			fault(&w)
+			return
+		}
+		fmt.Println("查询页", response.Status)
+		if response.StatusCode != 200 {
+			fault(&w)
+			return
+		}
+
+		doc := decoder.NewReader(response.Body)
+		result, _ := goquery.NewDocumentFromReader(doc)
+		view, _ := result.Find("#__VIEWSTATE").Attr("value")
+		event, _ := result.Find("#__EVENTVALIDATION").Attr("value")
+		v := url.Values{}
+		v.Add("btn_xq", encoder.ConvertString("学期成绩"))
+		v.Add("__EVENTTARGET", "")
+		v.Add("__EVENTARGUMENT", "")
+		v.Add("__VIEWSTATE", view)
+		v.Add("hidLanguage", "")
+		v.Add("ddlXN", "2016-2017")
+		v.Add("ddlXQ", "2")
+		v.Add("ddl_kcxz", "")
+		v.Add("__EVENTVALIDATION", event)
+
+		body := strings.NewReader(v.Encode())
+		req, err = http.NewRequest("POST", resulturl, body)
+		checkErr(err)
+		req.Header.Add("Referer", resulturl)
+		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+		req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.104 Safari/537.36")
+		/*for k,va :=range r.Header{
+			fmt.Println(k,va)
+		}
+		c.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		}*/
+		response, err = c.Do(req)
+		checkErr(err)
+		fmt.Println("结果页", response.Status)
+		grade := matchgrade(response)
+		t, err := template.ParseFiles("view/grade.html", "view/footer.html", "view/header.html")
+		checkErr(err)
+		err = t.ExecuteTemplate(w, "grade",Grade{Name: decoder.ConvertString(cname), Num: r.Form["num"][0],Graderesult:grade})
+		checkErr(err)
+	} else if r.Method == "GET" {
+		fault(&w)
+		return
+	}
+}
+
+func matchgrade(response1 *http.Response) [][]string {
+	dec := mahonia.NewDecoder("gbk")
+	doc := dec.NewReader(response1.Body)
+	result, _ := goquery.NewDocumentFromReader(doc)
+	graderesult:=make([][]string,14)
+	result.Find(".datelist").Find("tr").Each(func(i int, s *goquery.Selection) {
+		if i > 0 {
+			row:=make([]string,6)
+			row[0]=s.Find("td").Eq(3).Text()
+			row[1]=s.Find("td").Eq(4).Text()
+			row[2]=s.Find("td").Eq(6).Text()
+			row[3]=s.Find("td").Eq(7).Text()
+			row[4]=s.Find("td").Eq(8).Text()
+			row[5]=s.Find("td").Eq(12).Text()
+			//fmt.Println(row)
+			//graderesult= append(graderesult,row)
+			graderesult[i-1]=make([]string, 6)
+			graderesult[i-1]=row
+			for k,v:=range graderesult{
+				fmt.Println(i,k,v)
+			}
+			//fmt.Println(s.Find("td").Eq(0).Text(), s.Find("td").Eq(2).Text())
+		}
+	})
+	for k,v:=range graderesult{
+		fmt.Println(k,v)
+	}
+	return   graderesult
+}
+
+func matchcredit(response1 *http.Response) (map[string]string, string, string) {
 	ma := make(map[string]string)
 	dec := mahonia.NewDecoder("gbk")
 	doc := dec.NewReader(response1.Body)
@@ -133,9 +296,6 @@ func match(response1 *http.Response) (map[string]string, string, string) {
 	})
 	jd := result.Find("#pjxfjd").Text()
 	xf := result.Find("#xftj").Text()
-	//for k, v := range ma {
-	//	fmt.Println(k, v)
-	//}
 	return ma, xf, jd
 }
 func checkErr(err error) {
