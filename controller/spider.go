@@ -249,7 +249,7 @@ func matchgrade(response1 *http.Response) [][]string {
 	dec := mahonia.NewDecoder("gbk")
 	doc := dec.NewReader(response1.Body)
 	result, _ := goquery.NewDocumentFromReader(doc)
-	graderesult:=make([][]string,14)
+	graderesult:=make([][]string,0)
 	result.Find(".datelist").Find("tr").Each(func(i int, s *goquery.Selection) {
 		if i > 0 {
 			row:=make([]string,6)
@@ -260,13 +260,10 @@ func matchgrade(response1 *http.Response) [][]string {
 			row[4]=s.Find("td").Eq(8).Text()
 			row[5]=s.Find("td").Eq(12).Text()
 			//fmt.Println(row)
-			//graderesult= append(graderesult,row)
-			graderesult[i-1]=make([]string, 6)
-			graderesult[i-1]=row
-			for k,v:=range graderesult{
+			graderesult=append(graderesult, row)
+			/*for k,v:=range graderesult{
 				fmt.Println(i,k,v)
-			}
-			//fmt.Println(s.Find("td").Eq(0).Text(), s.Find("td").Eq(2).Text())
+			}*/
 		}
 	})
 	for k,v:=range graderesult{
