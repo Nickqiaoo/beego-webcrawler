@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "beego-webcrawer/routers"
+	_ "beego-webcrawler/routers"
 	"github.com/astaxie/beego"
 )
 

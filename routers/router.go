@@ -1,7 +1,7 @@
 package routers
 
 import (
-	"beego-webcrawer/controllers"
+	"beego-webcrawler/controllers"
 	"github.com/astaxie/beego"
 )
 
