@@ -31,7 +31,7 @@ func Welcome(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(r.URL.Path)
 		if strings.HasPrefix(r.URL.Path, "/static") {
 			if strings.HasPrefix(r.URL.Path, "/static/im") {
-				//GE验证码
+				//GET验证码
 				file1, err := os.OpenFile("./static/image.jpg", os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
 				if err != nil {
 					log.Fatal(err)

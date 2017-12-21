@@ -8,7 +8,7 @@ import (
 
 func main() {
 	http.HandleFunc("/credit", controller.Querycredit)
-	http.HandleFunc("/login/", controller.Welcome)
+	http.HandleFunc("/login", controller.Welcome)
 	http.HandleFunc("/static/", controller.Welcome)
 	http.HandleFunc("/grade", controller.Querygrade)
 	err := http.ListenAndServe(":9090", nil)
