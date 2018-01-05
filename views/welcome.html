@@ -14,6 +14,7 @@
                         <div class="form-group">
                             <button type="submit" class="btn btn-success active" onclick="credit()">学分查询</button>
                             <button type="submit" class="btn btn-success active" onclick="grade()">成绩查询</button>
+                            <button type="submit" class="btn btn-success active" onclick="aevaluate()">教学评价</button>
                         </div>
                     </form>
                 </div>
@@ -29,6 +30,10 @@
     }
     function credit(){
            document.forms.sub.action="/credit";
+           document.forms.sub.submit();
+    }
+    function aevaluate(){
+           document.forms.sub.action="/evaluate";
            document.forms.sub.submit();
     }
     </script>

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
 	
 	"github.com/PuerkitoBio/goquery"
 	"github.com/axgle/mahonia"
@@ -54,6 +55,7 @@ func spider(username string, password string, imagecode string, c *http.Client) 
 	response, err := c.Do(r)
 	fmt.Println("主页", response.Status)
 	checkErr(err)
+
 
 	doc := decoder.NewReader(response.Body)
 	result, err := goquery.NewDocumentFromReader(doc)
