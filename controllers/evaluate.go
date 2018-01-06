@@ -69,6 +69,10 @@ func (c *MainController) Evaluate() {
 
 	var res string
 
+	if len(course)==0{
+		res = "您已评价过"
+	}
+
 	//遍历所有课程
 	for i, Url := range course {
 		v := url.Values{}
@@ -151,7 +155,7 @@ func (c *MainController) Evaluate() {
 		}
 
 		if i == len(course)-1 {
-			res = "成功"
+			res = "评价成功"
 		}
 		//time.Sleep(5 * time.Second)
 	}
