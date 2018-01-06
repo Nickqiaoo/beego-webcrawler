@@ -77,7 +77,9 @@ func (c *MainController) Evaluate() {
 	//遍历所有课程
 	for i, Url := range course {
 		v := url.Values{}
-		fmt.Println(Url)
+		if i == 0 {
+			fmt.Println(Url)
+		}
 		req, _ := http.NewRequest("GET", Url, nil)
 		req.Close = true
 		req.Header.Add("Referer", "http://xk1.ahu.cn/xs_main.aspx?xh="+c.Ctx.Request.Form["num"][0])
