@@ -78,6 +78,7 @@ func (c *MainController) Evaluate() {
 		v := url.Values{}
 		fmt.Println(Url)
 		req, _ := http.NewRequest("GET", Url, nil)
+		req.Close = true
 		req.Header.Add("Referer", "http://xk1.ahu.cn/xs_main.aspx?xh="+c.Ctx.Request.Form["num"][0])
 		req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.104 Safari/537.36")
 		response, err := client.Do(req)
@@ -133,6 +134,7 @@ func (c *MainController) Evaluate() {
 
 		body := strings.NewReader(v.Encode())
 		req, err = http.NewRequest("POST", Url, body)
+		req.Close = true
 		checkErr(err)
 		req.Header.Add("Referer", Url)
 		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
@@ -150,6 +152,7 @@ func (c *MainController) Evaluate() {
 			v.Add("Button2", encoder.ConvertString(" 提  交 "))
 			body := strings.NewReader(v.Encode())
 			req, err = http.NewRequest("POST", Url, body)
+			req.Close = true
 			checkErr(err)
 			req.Header.Add("Referer", Url)
 			req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
