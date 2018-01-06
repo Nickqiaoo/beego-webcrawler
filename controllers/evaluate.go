@@ -127,7 +127,7 @@ func (c *MainController) Evaluate() {
 		v.Add("Button1", encoder.ConvertString("保 存"))
 
 		body := strings.NewReader(v.Encode())
-		req, err = http.NewRequest("POST", course[0], body)
+		req, err = http.NewRequest("POST", Url, body)
 		checkErr(err)
 		req.Header.Add("Referer", Url)
 		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
