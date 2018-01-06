@@ -65,6 +65,11 @@ func (c *MainController) Craw() {
 	//fmt.Println("username:", c.Ctx.Request.Form["username"])
 	//fmt.Println("password:", c.Ctx.Request.Form["password"])
 	//fmt.Println("yzm", c.Ctx.Request.Form["yzm"])
+	if len(c.Ctx.Request.Form["username"])==0{
+		c.TplName = "fault.html"
+		return
+	}
+
 
 	info := spider(c.Ctx.Request.Form["username"][0], c.Ctx.Request.Form["password"][0], c.Ctx.Request.Form["yzm"][0], &client)
 	if info == nil {
