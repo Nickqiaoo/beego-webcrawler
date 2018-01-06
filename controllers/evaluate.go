@@ -40,6 +40,7 @@ func (c *MainController) Evaluate() {
 	resulturl := "http://xk1.ahu.cn/xs_main.aspx?xh=" + c.Ctx.Request.Form["num"][0]
 	//fmt.Println(resulturl)
 	req, _ := http.NewRequest("GET", resulturl, nil)
+	req.Close=true
 	req.Header.Add("Referer", resulturl)
 	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.104 Safari/537.36")
 	response, err := client.Do(req)
