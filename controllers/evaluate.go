@@ -69,7 +69,7 @@ func (c *MainController) Evaluate() {
 
 	var res string
 
-	if len(course)==0{
+	if len(course) == 0 {
 		res = "您已评价过"
 	}
 
@@ -104,7 +104,12 @@ func (c *MainController) Evaluate() {
 		fmt.Println(Url[35:64])
 		for k := 1; k <= num; k++ {
 			for j := 2; j <= 8; j++ {
-				s1 := "DataGrid1$ctl0" + strconv.Itoa(j) + "$JS" + strconv.Itoa(k)
+				var s1 string
+				if k > 2 {
+					s1 = "DataGrid1$ctl0" + strconv.Itoa(j) + "$js" + strconv.Itoa(k)
+				} else {
+					s1 = "DataGrid1$ctl0" + strconv.Itoa(j) + "$JS" + strconv.Itoa(k)
+				}
 				//fmt.Println(s1)
 				s2 := "DataGrid1$ctl0" + strconv.Itoa(j) + "$txtjs" + strconv.Itoa(k)
 				if j == 2 {
