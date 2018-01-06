@@ -40,7 +40,7 @@ func (c *MainController) Evaluate() {
 	resulturl := "http://xk1.ahu.cn/xs_main.aspx?xh=" + c.Ctx.Request.Form["num"][0]
 	//fmt.Println(resulturl)
 	req, _ := http.NewRequest("GET", resulturl, nil)
-	req.Close=true
+	req.Close = true
 	req.Header.Add("Referer", resulturl)
 	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.104 Safari/537.36")
 	response, err := client.Do(req)
@@ -102,8 +102,11 @@ func (c *MainController) Evaluate() {
 
 		//获取教师数目
 		num := result.Find("#DataGrid1").Find("tbody").Find("tr.alt").Eq(0).Find("td").Length() - 2
+		if num == 0 {
+			num = 1
+		}
 		fmt.Println("教师数目：", num)
-		fmt.Println(Url[35:64])
+		//fmt.Println(Url[35:64])
 		for k := 1; k <= num; k++ {
 			for j := 2; j <= 8; j++ {
 				var s1 string
