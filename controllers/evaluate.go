@@ -102,9 +102,7 @@ func (c *MainController) Evaluate() {
 
 		//获取教师数目
 		num := result.Find("#DataGrid1").Find("tbody").Find("tr.alt").Eq(0).Find("td").Length() - 2
-		if num == 0 {
-			num = 1
-		}
+
 		fmt.Println("教师数目：", num)
 		//fmt.Println(Url[35:64])
 		for k := 1; k <= num; k++ {
