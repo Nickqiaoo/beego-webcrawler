@@ -1,9 +1,8 @@
 package controllers
 
 import (
-	"fmt"
 	//"io/ioutil"
-	//"log"
+	"log"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -15,7 +14,9 @@ import (
 	"github.com/axgle/mahonia"
 )
 
+// Evaluate 教学评价
 func (c *MainController) Evaluate() {
+	//初始化client
 	var course []string
 	jar, _ := cookiejar.New(nil)
 	checkcodeurl, _ := url.Parse(Checkcodeurl)
@@ -38,7 +39,6 @@ func (c *MainController) Evaluate() {
 	encoder := mahonia.NewEncoder("gbk")
 	decoder := mahonia.NewDecoder("gbk")
 	resulturl := "http://xk1.ahu.cn/xs_main.aspx?xh=" + c.Ctx.Request.Form["num"][0]
-	//fmt.Println(resulturl)
 	req, _ := http.NewRequest("GET", resulturl, nil)
 	req.Close = true
 	req.Header.Add("Referer", resulturl)
@@ -49,7 +49,7 @@ func (c *MainController) Evaluate() {
 		c.TplName = "fault.html"
 		return
 	}
-	fmt.Println("首页", response.Status)
+	log.Println(c.Ctx.Request.Form["num"][0],c.Ctx.Request.Form["name"][0],"获取首页", response.Status)
 	if response.StatusCode != 200 {
 		c.TplName = "fault.html"
 		return
@@ -61,12 +61,11 @@ func (c *MainController) Evaluate() {
 	result.Find("div#headDiv").Find("ul.nav").Find("li.top").Eq(2).Find("ul.sub").Find("li").Each(func(i int, s *goquery.Selection) {
 		ref, a := s.Find("a").Attr("href")
 		if a == false {
-			fmt.Println("未找到课程列表")
+			log.Println("未找到课程列表")
 		}
 		course = append(course, "http://xk1.ahu.cn/"+ref)
-		//fmt.Println(ref)
 	})
-	fmt.Println("课程数量：", len(course))
+	log.Println("课程数量：", len(course))
 
 	var res string
 
@@ -77,9 +76,6 @@ func (c *MainController) Evaluate() {
 	//遍历所有课程
 	for i, Url := range course {
 		v := url.Values{}
-		if i == 0 {
-			fmt.Println(Url)
-		}
 		req, _ := http.NewRequest("GET", Url, nil)
 		req.Close = true
 		req.Header.Add("Referer", "http://xk1.ahu.cn/xs_main.aspx?xh="+c.Ctx.Request.Form["num"][0])
@@ -90,7 +86,7 @@ func (c *MainController) Evaluate() {
 			c.TplName = "fault.html"
 			return
 		}
-		fmt.Println("课程页", response.Status)
+		log.Println(c.Ctx.Request.Form["num"][0],c.Ctx.Request.Form["username"][0],"课程页", response.Status)
 		if response.StatusCode != 200 {
 			c.TplName = "fault.html"
 			return
@@ -104,9 +100,9 @@ func (c *MainController) Evaluate() {
 
 		//获取教师数目
 		num := result.Find("#DataGrid1").Find("tbody").Find("tr.alt").Eq(0).Find("td").Length() - 2
-
-		fmt.Println("教师数目：", num)
+		log.Println("教师数目：", num)
 		//fmt.Println(Url[35:64])
+		//构造post数据
 		for k := 1; k <= num; k++ {
 			for j := 2; j <= 8; j++ {
 				var s1 string
@@ -115,7 +111,6 @@ func (c *MainController) Evaluate() {
 				} else {
 					s1 = "DataGrid1$ctl0" + strconv.Itoa(j) + "$JS" + strconv.Itoa(k)
 				}
-				//fmt.Println(s1)
 				s2 := "DataGrid1$ctl0" + strconv.Itoa(j) + "$txtjs" + strconv.Itoa(k)
 				if j == 2 {
 					v.Add(s1, encoder.ConvertString("良好"))
@@ -143,14 +138,10 @@ func (c *MainController) Evaluate() {
 		req.Header.Add("Referer", Url)
 		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 		req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.104 Safari/537.36")
-		/*
-			c.CheckRedirect = func(req *http.Request, via []*http.Request) error {
-				return http.ErrUseLastResponse
-			}*/
 		response, err = client.Do(req)
 		checkErr(err)
-		fmt.Println("保存成功", response.Status)
-		fmt.Println()
+		log.Println(i,"保存成功", response.Status)
+		//最后一门课时提交
 		if i == len(course)-1 {
 			v.Del("Button1")
 			v.Add("Button2", encoder.ConvertString(" 提  交 "))
@@ -163,7 +154,7 @@ func (c *MainController) Evaluate() {
 			req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.104 Safari/537.36")
 			response, err = client.Do(req)
 			checkErr(err)
-			fmt.Println("提交成功", response.Status)
+			log.Println(c.Ctx.Request.Form["num"][0],c.Ctx.Request.Form["username"][0],"提交成功", response.Status)
 		}
 
 		if i == len(course)-1 {

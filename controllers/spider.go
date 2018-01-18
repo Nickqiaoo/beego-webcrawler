@@ -1,16 +1,13 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
-	"net/url"
-	"strings"
-
 	
 	"github.com/PuerkitoBio/goquery"
 	"github.com/axgle/mahonia"
 )
 
+// Result 学分结果
 type Result struct {
 	Num  string
 	Name string
@@ -19,55 +16,17 @@ type Result struct {
 	Jd   string
 }
 
+// Info 学号，姓名
 type Info struct {
 	Name string
 	Num  string
 }
 
+// Grade 成绩
 type Grade struct{
 	Num  string
 	Name string
 	Graderesult [][]string 
-}
-
-func spider(username string, password string, imagecode string, c *http.Client) *Info {
-	url1 := "http://xk1.ahu.cn/default2.aspx"
-	v := url.Values{}
-	encoder := mahonia.NewEncoder("gbk")
-	decoder := mahonia.NewDecoder("gbk")
-	but := encoder.ConvertString("学生")
-	v.Add("__VIEWSTATE", "/wEPDwUJODk4OTczODQxZGQhFC7x2TzAGZQfpidAZYYjo/LeoQ==")
-	v.Add("txtUserName", username)
-	v.Add("TextBox2", password)
-	v.Add("txtSecretCode", imagecode)
-	v.Add("RadioButtonList1", but)
-	v.Add("Button1", "")
-	v.Add("lbLanguage", "")
-	v.Add("hidPdrs", "")
-	v.Add("hidsc", "")
-	v.Add("__EVENTVALIDATION", "/wEWDgKX/4yyDQKl1bKzCQLs0fbZDAKEs66uBwK/wuqQDgKAqenNDQLN7c0VAuaMg+INAveMotMNAoznisYGArursYYIAt+RzN8IApObsvIHArWNqOoPqeRyuQR+OEZezxvi70FKdYMjxzk=")
-	//建立client发送POST请求
-	body := strings.NewReader(v.Encode())
-	r, _ := http.NewRequest("POST", url1, body)
-	r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	r.Header.Add("Referer", "http://xk1.ahu.cn/default2.aspx")
-	r.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.104 Safari/537.36")
-	response, err := c.Do(r)
-	fmt.Println("主页", response.Status)
-	checkErr(err)
-
-
-	doc := decoder.NewReader(response.Body)
-	result, err := goquery.NewDocumentFromReader(doc)
-	checkErr(err)
-	cname := result.Find("title").Text()
-	if strings.HasPrefix(cname, "欢迎") {
-		fmt.Println("主页获取错误")
-		return nil
-	}
-	cname = result.Find("#xhxm").Text()
-	cname = strings.TrimRight(cname, "同学")
-	return &Info{Name: cname, Num: username}
 }
 
 
