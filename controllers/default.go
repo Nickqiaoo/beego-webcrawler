@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"time"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -20,11 +21,6 @@ type MainController struct {
 	beego.Controller
 }
 
-func checkErr(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
-}
 
 // Login 返回登陆界面
 func (c *MainController) Login() {
@@ -54,6 +50,7 @@ func (c *MainController) Craw() {
 	checkcodeurl, _ := url.Parse(Checkcodeurl)
 	client := http.Client{
 		Jar: jar,
+		Timeout:time.Second*10,
 	}
 	var err error
 	cookie := make([]*http.Cookie, 1)
@@ -96,13 +93,21 @@ func (c *MainController) Craw() {
 	r.Header.Add("Referer", "http://xk1.ahu.cn/default2.aspx")
 	r.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.104 Safari/537.36")
 	response, err := client.Do(r)
-	checkErr(err)
+	if err != nil {
+		log.Println(err)
+		c.TplName = "fault.html"
+		return
+	}
 	log.Println( c.Ctx.Request.Form["username"][0],"主页获取成功", response.Status)
 
 	//解析主页，如果有欢迎则说明获取失败
 	doc := decoder.NewReader(response.Body)
 	result, err := goquery.NewDocumentFromReader(doc)
-	checkErr(err)
+	if err != nil {
+		log.Println(err)
+		c.TplName = "fault.html"
+		return
+	}
 	cname := result.Find("title").Text()
 	if strings.HasPrefix(cname, "欢迎") {
 		log.Println( c.Ctx.Request.Form["username"][0],"主页获取错误")
@@ -125,6 +130,7 @@ func (c *MainController) Querycredit() {
 	checkcodeurl, _ := url.Parse(Checkcodeurl)
 	client := http.Client{
 		Jar: jar,
+		Timeout:time.Second*10,
 	}
 	var err error
 	cookie := make([]*http.Cookie, 1)
@@ -174,12 +180,20 @@ func (c *MainController) Querycredit() {
 	//构建新请求
 	body := strings.NewReader(v.Encode())
 	req, err = http.NewRequest("POST", resulturl, body)
-	checkErr(err)
+	if err != nil {
+		log.Println(err)
+		c.TplName = "fault.html"
+		return
+	}
 	req.Header.Add("Referer", resulturl)
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.104 Safari/537.36")
 	response, err = client.Do(req)
-	checkErr(err)
+	if err != nil {
+		log.Println(err)
+		c.TplName = "fault.html"
+		return
+	}
 	log.Println(c.Ctx.Request.Form["num"][0],c.Ctx.Request.Form["name"][0],"学分结果页", response.Status)
 	ma, xf, jd := matchcredit(response)
 	c.Data["Name"] = decoder.ConvertString(cname)
@@ -197,6 +211,7 @@ func (c *MainController) Querygrade() {
 	checkcodeurl, _ := url.Parse(Checkcodeurl)
 	client := http.Client{
 		Jar: jar,
+		Timeout:time.Second*10,
 	}
 	var err error
 	cookie := make([]*http.Cookie, 1)
@@ -245,12 +260,20 @@ func (c *MainController) Querygrade() {
 	//构造新请求
 	body := strings.NewReader(v.Encode())
 	req, err = http.NewRequest("POST", resulturl, body)
-	checkErr(err)
+	if err != nil {
+		log.Println(err)
+		c.TplName = "fault.html"
+		return
+	}
 	req.Header.Add("Referer", resulturl)
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.104 Safari/537.36")
 	response, err = client.Do(req)
-	checkErr(err)
+	if err != nil {
+		log.Println(err)
+		c.TplName = "fault.html"
+		return
+	}
 	log.Println(c.Ctx.Request.Form["num"][0],c.Ctx.Request.Form["name"][0],"成绩结果页", response.Status)
 	grade := matchgrade(response)
 	c.Data["Name"] = decoder.ConvertString(cname)

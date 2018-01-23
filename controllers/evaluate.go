@@ -27,6 +27,7 @@ func (c *MainController) Evaluate() {
 	cookie := make([]*http.Cookie, 1)
 	cookie[0], err = c.Ctx.Request.Cookie("ASP.NET_SessionId")
 	if err != nil {
+		log.Println(err)
 		c.TplName = "fault.html"
 		return
 	}
@@ -44,8 +45,8 @@ func (c *MainController) Evaluate() {
 	req.Header.Add("Referer", resulturl)
 	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.104 Safari/537.36")
 	response, err := client.Do(req)
-	checkErr(err)
 	if err != nil {
+		log.Println(err)
 		c.TplName = "fault.html"
 		return
 	}
@@ -81,8 +82,8 @@ func (c *MainController) Evaluate() {
 		req.Header.Add("Referer", "http://xk1.ahu.cn/xs_main.aspx?xh="+c.Ctx.Request.Form["num"][0])
 		req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.104 Safari/537.36")
 		response, err := client.Do(req)
-		checkErr(err)
 		if err != nil {
+			log.Println(err)
 			c.TplName = "fault.html"
 			return
 		}
@@ -134,12 +135,20 @@ func (c *MainController) Evaluate() {
 		body := strings.NewReader(v.Encode())
 		req, err = http.NewRequest("POST", Url, body)
 		req.Close = true
-		checkErr(err)
+		if err != nil {
+			log.Println(err)
+			c.TplName = "fault.html"
+			return
+		}
 		req.Header.Add("Referer", Url)
 		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 		req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.104 Safari/537.36")
 		response, err = client.Do(req)
-		checkErr(err)
+		if err != nil {
+			log.Println(err)
+			c.TplName = "fault.html"
+			return
+		}
 		log.Println(i,"保存成功", response.Status)
 		//最后一门课时提交
 		if i == len(course)-1 {
@@ -148,12 +157,20 @@ func (c *MainController) Evaluate() {
 			body := strings.NewReader(v.Encode())
 			req, err = http.NewRequest("POST", Url, body)
 			req.Close = true
-			checkErr(err)
+			if err != nil {
+				log.Println(err)
+				c.TplName = "fault.html"
+				return
+			}
 			req.Header.Add("Referer", Url)
 			req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 			req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.104 Safari/537.36")
 			response, err = client.Do(req)
-			checkErr(err)
+			if err != nil {
+				log.Println(err)
+				c.TplName = "fault.html"
+				return
+			}
 			log.Println(c.Ctx.Request.Form["num"][0],c.Ctx.Request.Form["username"][0],"提交成功", response.Status)
 		}
 
