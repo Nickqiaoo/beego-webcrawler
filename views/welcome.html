@@ -12,11 +12,11 @@
                         <input type="hidden" class="form-control" name=name value={{.Name}}>
                         <input type="hidden" class="form-control" name=num value={{.Num}}>
                         <div class="form-group">
-                            <button type="submit" class="btn btn-success active" onclick="credit()">学分查询</button>
-                            <button type="submit" class="btn btn-success active" onclick="grade()">成绩查询</button>
-                            <p>评价时间大约10s，请不要重复点击</p>
+                            <button id="btn1" type="submit" class="btn btn-success active" onclick="credit()">学分查询</button>
+                            <button id="btn2" type="submit" class="btn btn-success active" onclick="grade()">成绩查询</button>
+                            <p>评价时间大约10s,请耐心等待</p>
                             <p>评价策略：一良好其余优秀</p>
-                            <button type="submit" class="btn btn-success active" onclick="aevaluate()">教学评价</button>
+                            <button id="btn3" type="submit" class="btn btn-success active" onclick="aevaluate()">教学评价</button>
                         </div>
                     </form>
                 </div>
@@ -29,13 +29,16 @@
     function grade() {
         document.forms.sub.action = "/grade";
         document.forms.sub.submit();
+        document.getElementById("btn2").disabled=true;
     }
     function credit() {
         document.forms.sub.action = "/credit";
         document.forms.sub.submit();
+        document.getElementById("btn1").disabled=true;
     }
     function aevaluate() {
         document.forms.sub.action = "/evaluate";
         document.forms.sub.submit();
+        document.getElementById("btn3").disabled=true;
     }
 </script> {{template "footer.html" .}}
