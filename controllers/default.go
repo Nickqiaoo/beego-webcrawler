@@ -98,7 +98,7 @@ func (c *MainController) Craw() {
 		c.TplName = "fault.html"
 		return
 	}
-	log.Println( c.Ctx.Request.Form["username"][0],"主页获取成功", response.Status)
+	log.Println( c.Ctx.Request.Form["username"][0],"登陆-主页获取成功", response.Status)
 
 	//解析主页，如果有欢迎则说明获取失败
 	doc := decoder.NewReader(response.Body)

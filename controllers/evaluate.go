@@ -50,7 +50,7 @@ func (c *MainController) Evaluate() {
 		c.TplName = "fault.html"
 		return
 	}
-	log.Println(c.Ctx.Request.Form["num"][0],c.Ctx.Request.Form["name"][0],"获取首页", response.Status)
+	log.Println(c.Ctx.Request.Form["num"][0],c.Ctx.Request.Form["name"][0],"评价-获取首页", response.Status)
 	if response.StatusCode != 200 {
 		c.TplName = "fault.html"
 		return
@@ -87,7 +87,7 @@ func (c *MainController) Evaluate() {
 			c.TplName = "fault.html"
 			return
 		}
-		log.Println(c.Ctx.Request.Form["num"][0],c.Ctx.Request.Form["username"][0],"课程页", response.Status)
+		log.Println(c.Ctx.Request.Form["num"][0],c.Ctx.Request.Form["username"][0],"评价-获取课程页", response.Status)
 		if response.StatusCode != 200 {
 			c.TplName = "fault.html"
 			return
