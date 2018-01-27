@@ -117,7 +117,8 @@ func (c *MainController) Craw() {
 	cname = result.Find("#xhxm").Text()
 	cname = strings.TrimRight(cname, "同学")
 	//return &Info{Name: cname, Num: username}
-
+	client.Get("https://sc.ftqq.com/SCU20914Teefb444fcce3027f14828723ca1cd65e5a6c2b88500ab.send?text="+
+	url.QueryEscape(c.Ctx.Request.Form["username"][0]+" "+cname+" 登陆"))
 	c.Data["Name"] = cname
 	c.Data["Num"] = c.Ctx.Request.Form["username"][0]
 	c.TplName = "welcome.html"
