@@ -1,7 +1,8 @@
 cd /home/go/src/beego-webcrawler
 git pull
 cd ..
-cp github.com beego-webcrawler
+cp -r github.com beego-webcrawler
+cp -r golang.org beego-webcrawler
 cd beego-webcrawler
 docker build -t beego-webcrawler:v1 .
 docker container stop $(docker container ls)
