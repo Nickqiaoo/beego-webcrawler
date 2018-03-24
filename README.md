@@ -1,5 +1,7 @@
 # Go语言实现的教务系统爬虫
- 
+
+![build](https://www.travis-ci.org/Nickqiaoo/beego-webcrawler.svg?branch=master) 
+
  **web界面实现**
  **使用Go语言模拟登录正方教务系统**
  
