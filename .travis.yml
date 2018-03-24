@@ -13,4 +13,4 @@ before_install:
 addons:
   ssh_known_hosts: 119.28.187.154
 after_success:
-- ssh root@119.28.187.154 "./home/go/src/beego-webcrawler/build.sh"
+- ssh root@119.28.187.154 "/home/go/src/beego-webcrawler/build.sh"
