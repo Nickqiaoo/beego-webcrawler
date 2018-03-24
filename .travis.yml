@@ -1,8 +1,12 @@
 language: go
 go:
-  - "1.8"
+- '1.8'
 install:
-  - go get github.com/PuerkitoBio/goquery 
-  - go get github.com/astaxie/beego 
-  - go get github.com/axgle/mahonia 
+- go get github.com/PuerkitoBio/goquery
+- go get github.com/astaxie/beego
+- go get github.com/axgle/mahonia
 go_import_path: beego-webcrawler
+before_install:
+- openssl aes-256-cbc -K $encrypted_a166b42f41eb_key -iv $encrypted_a166b42f41eb_iv
+  -in id_rsa.enc -out ~\/.ssh/id_rsa -d
+- chmod 600 ~/.ssh/id_rsa
