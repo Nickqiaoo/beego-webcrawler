@@ -8,5 +8,5 @@ install:
 go_import_path: beego-webcrawler
 before_install:
 - openssl aes-256-cbc -K $encrypted_a166b42f41eb_key -iv $encrypted_a166b42f41eb_iv
-  -in id_rsa.enc -out ~\/.ssh/id_rsa -d
+  -in id_rsa.enc -out ~/.ssh/id_rsa -d
 - chmod 600 ~/.ssh/id_rsa
