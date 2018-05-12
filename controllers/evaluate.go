@@ -39,7 +39,7 @@ func (c *MainController) Evaluate() {
 	//获取主页
 	encoder := mahonia.NewEncoder("gbk")
 	decoder := mahonia.NewDecoder("gbk")
-	resulturl := "http://xk1.ahu.cn/xs_main.aspx?xh=" + c.Ctx.Request.Form["num"][0]
+	resulturl := "http://jw1.ahu.cn/xs_main.aspx?xh=" + c.Ctx.Request.Form["num"][0]
 	req, _ := http.NewRequest("GET", resulturl, nil)
 	req.Close = true
 	req.Header.Add("Referer", resulturl)
@@ -59,12 +59,12 @@ func (c *MainController) Evaluate() {
 	//获取所有课程
 	doc := decoder.NewReader(response.Body)
 	result, _ := goquery.NewDocumentFromReader(doc)
-	result.Find("div#headDiv").Find("ul.nav").Find("li.top").Eq(2).Find("ul.sub").Find("li").Each(func(i int, s *goquery.Selection) {
+	result.Find("div#headDiv").Find("ul.nav").Find("li.top").Eq(3).Find("ul.sub").Find("li").Each(func(i int, s *goquery.Selection) {
 		ref, a := s.Find("a").Attr("href")
 		if a == false {
 			log.Println("未找到课程列表")
 		}
-		course = append(course, "http://xk1.ahu.cn/"+ref)
+		course = append(course, "http://jw1.ahu.cn/"+ref)
 	})
 	log.Println("课程数量：", len(course))
 
@@ -79,7 +79,7 @@ func (c *MainController) Evaluate() {
 		v := url.Values{}
 		req, _ := http.NewRequest("GET", Url, nil)
 		req.Close = true
-		req.Header.Add("Referer", "http://xk1.ahu.cn/xs_main.aspx?xh="+c.Ctx.Request.Form["num"][0])
+		req.Header.Add("Referer", "http://jw1.ahu.cn/xs_main.aspx?xh="+c.Ctx.Request.Form["num"][0])
 		req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.104 Safari/537.36")
 		response, err := client.Do(req)
 		if err != nil {
@@ -87,7 +87,7 @@ func (c *MainController) Evaluate() {
 			c.TplName = "fault.html"
 			return
 		}
-		log.Println(c.Ctx.Request.Form["num"][0],c.Ctx.Request.Form["username"][0],"评价-获取课程页", response.Status)
+		log.Println(c.Ctx.Request.Form["num"][0],c.Ctx.Request.Form["name"][0],"评价-获取课程页", response.Status)
 		if response.StatusCode != 200 {
 			c.TplName = "fault.html"
 			return
@@ -171,7 +171,7 @@ func (c *MainController) Evaluate() {
 				c.TplName = "fault.html"
 				return
 			}
-			log.Println(c.Ctx.Request.Form["num"][0],c.Ctx.Request.Form["username"][0],"提交成功", response.Status)
+			log.Println(c.Ctx.Request.Form["num"][0],c.Ctx.Request.Form["name"][0],"提交成功", response.Status)
 		}
 
 		if i == len(course)-1 {
