@@ -16,7 +16,7 @@ import (
 )
 
 // Checkcodeurl 验证码url
-var Checkcodeurl = "http://jw1.ahu.cn/CheckCode.aspx"
+var Checkcodeurl = "http://jw3.ahu.cn/CheckCode.aspx"
 
 type MainController struct {
 	beego.Controller
@@ -37,7 +37,12 @@ func (c *MainController) Checkcode() {
 		// },
 		Jar: jar,
 	}
-	req, _ := client.Get(Checkcodeurl)
+	req, err := client.Get(Checkcodeurl)
+	if err != nil {
+		log.Println(err)
+		c.TplName = "fault.html"
+		return
+	}
 	cook := client.Jar.Cookies(checkcodeurl)
 	c.Ctx.Output.Cookie(cook[0].Name, cook[0].Value)
 	imagecode, _ := ioutil.ReadAll(req.Body)
@@ -70,7 +75,7 @@ func (c *MainController) Craw() {
 	}
 
 	//获取主页
-	url1 := "http://jw1.ahu.cn/default2.aspx"
+	url1 := "http://jw3.ahu.cn/default2.aspx"
 	v := url.Values{}
 	encoder := mahonia.NewEncoder("gbk")
 	decoder := mahonia.NewDecoder("gbk")
@@ -90,7 +95,7 @@ func (c *MainController) Craw() {
 	body := strings.NewReader(v.Encode())
 	r, _ := http.NewRequest("POST", url1, body)
 	r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	r.Header.Add("Referer", "http://jw1.ahu.cn/default2.aspx")
+	r.Header.Add("Referer", "http://jw3.ahu.cn/default2.aspx")
 	r.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.104 Safari/537.36")
 	response, err := client.Do(r)
 	if err != nil {
@@ -147,9 +152,9 @@ func (c *MainController) Querycredit() {
 	encoder := mahonia.NewEncoder("gbk")
 	decoder := mahonia.NewDecoder("gbk")
 	cname := encoder.ConvertString(c.Ctx.Request.Form["name"][0])
-	resulturl := "http://jw1.ahu.cn/xscjcx.aspx?xh=" + c.Ctx.Request.Form["num"][0] + "&xm=" + url.QueryEscape(cname) + "&gnmkdm=N121605"
+	resulturl := "http://jw3.ahu.cn/xscjcx.aspx?xh=" + c.Ctx.Request.Form["num"][0] + "&xm=" + url.QueryEscape(cname) + "&gnmkdm=N121605"
 	req, _ := http.NewRequest("GET", resulturl, nil)
-	req.Header.Add("Referer", "http://jw1.ahu.cn/xs_main.aspx?xh="+c.Ctx.Request.Form["num"][0])
+	req.Header.Add("Referer", "http://jw3.ahu.cn/xs_main.aspx?xh="+c.Ctx.Request.Form["num"][0])
 	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.104 Safari/537.36")
 	response, err := client.Do(req)
 	if err != nil {
@@ -231,9 +236,9 @@ func (c *MainController) Querygrade() {
 	encoder := mahonia.NewEncoder("gbk")
 	decoder := mahonia.NewDecoder("gbk")
 	cname := encoder.ConvertString(c.Ctx.Request.Form["name"][0])
-	resulturl := "http://jw1.ahu.cn/xscjcx.aspx?xh=" + c.Ctx.Request.Form["num"][0] + "&xm=" + url.QueryEscape(cname) + "&gnmkdm=N121605"
+	resulturl := "http://jw3.ahu.cn/xscjcx.aspx?xh=" + c.Ctx.Request.Form["num"][0] + "&xm=" + url.QueryEscape(cname) + "&gnmkdm=N121605"
 	req, _ := http.NewRequest("GET", resulturl, nil)
-	req.Header.Add("Referer", "http://jw1.ahu.cn/xs_main.aspx?xh="+c.Ctx.Request.Form["num"][0])
+	req.Header.Add("Referer", "http://jw3.ahu.cn/xs_main.aspx?xh="+c.Ctx.Request.Form["num"][0])
 	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.104 Safari/537.36")
 	response, err := client.Do(req)
 	if err != nil {
