@@ -265,7 +265,7 @@ func (c *MainController) Querygrade() {
 	v.Add("__VIEWSTATE", view)
 	v.Add("hidLanguage", "")
 	v.Add("ddlXN", "2017-2018")
-	v.Add("ddlXQ", "1")
+	v.Add("ddlXQ", "2")
 	v.Add("ddl_kcxz", "")
 	//v.Add("__EVENTVALIDATION", event)
 
