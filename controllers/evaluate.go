@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
-	//"time"
+	//"fmt"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/axgle/mahonia"
@@ -55,7 +55,6 @@ func (c *MainController) Evaluate() {
 		c.TplName = "fault.html"
 		return
 	}
-
 	//获取所有课程
 	doc := decoder.NewReader(response.Body)
 	result, _ := goquery.NewDocumentFromReader(doc)
@@ -64,6 +63,7 @@ func (c *MainController) Evaluate() {
 		if a == false {
 			log.Println("未找到课程列表")
 		}
+		log.Println(ref)
 		course = append(course, "http://jw3.ahu.cn/"+ref)
 	})
 	log.Println("课程数量：", len(course))
@@ -93,11 +93,9 @@ func (c *MainController) Evaluate() {
 			return
 		}
 
-		//获取页面view
 		doc := decoder.NewReader(response.Body)
 		result, _ := goquery.NewDocumentFromReader(doc)
-		view, _ := result.Find("#__VIEWSTATE").Attr("value")
-		event, _ := result.Find("#__EVENTVALIDATION").Attr("value")
+		view, _ := result.Find("#Form1").Find("input").Eq(2).Attr("value")
 
 		//获取教师数目
 		num := result.Find("#DataGrid1").Find("tbody").Find("tr.alt").Eq(0).Find("td").Length() - 2
@@ -107,12 +105,8 @@ func (c *MainController) Evaluate() {
 		for k := 1; k <= num; k++ {
 			for j := 2; j <= 8; j++ {
 				var s1 string
-				if k > 2 {
-					s1 = "DataGrid1$ctl0" + strconv.Itoa(j) + "$js" + strconv.Itoa(k)
-				} else {
-					s1 = "DataGrid1$ctl0" + strconv.Itoa(j) + "$JS" + strconv.Itoa(k)
-				}
-				s2 := "DataGrid1$ctl0" + strconv.Itoa(j) + "$txtjs" + strconv.Itoa(k)
+				s1 = "DataGrid1:_ctl" + strconv.Itoa(j) + ":JS" + strconv.Itoa(k)
+				s2 := "DataGrid1:_ctl" + strconv.Itoa(j) + ":txtjs" + strconv.Itoa(k)
 				if j == 2 {
 					v.Add(s1, encoder.ConvertString("良好"))
 				} else {
@@ -125,11 +119,11 @@ func (c *MainController) Evaluate() {
 		v.Add("__EVENTTARGET", "")
 		v.Add("__EVENTARGUMENT", "")
 		v.Add("__VIEWSTATE", view)
-		v.Add("__LASTFOCUS", "")
+		//v.Add("__LASTFOCUS", "")
 		v.Add("pjxx", "")
 		v.Add("txt1", "")
 		v.Add("TextBox1", "0")
-		v.Add("__EVENTVALIDATION", event)
+		//v.Add("__EVENTVALIDATION", event)
 		v.Add("Button1", encoder.ConvertString("保 存"))
 
 		body := strings.NewReader(v.Encode())

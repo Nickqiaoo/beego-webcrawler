@@ -80,7 +80,7 @@ func (c *MainController) Craw() {
 	encoder := mahonia.NewEncoder("gbk")
 	decoder := mahonia.NewDecoder("gbk")
 	but := encoder.ConvertString("学生")
-	v.Add("__VIEWSTATE", "dDwtNTE2MjI4MTQ7Oz7iEUOE+zDTFL5MlAoa/nIjJPPu3A==")
+	v.Add("__VIEWSTATE", "dDwtNTE2MjI4MTQ7Oz6EbPZxwZLeI+vJ7sUQsX6GLavdSg==")
 	v.Add("txtUserName", c.Ctx.Request.Form["username"][0])
 	v.Add("TextBox2", c.Ctx.Request.Form["password"][0])
 	v.Add("txtSecretCode", c.Ctx.Request.Form["yzm"][0])
@@ -103,8 +103,6 @@ func (c *MainController) Craw() {
 		c.TplName = "fault.html"
 		return
 	}
-	log.Println(c.Ctx.Request.Form["username"][0], "登陆-主页获取成功", response.Status)
-
 	//解析主页，如果有欢迎则说明获取失败
 	doc := decoder.NewReader(response.Body)
 	result, err := goquery.NewDocumentFromReader(doc)
@@ -119,6 +117,7 @@ func (c *MainController) Craw() {
 		c.TplName = "fault.html"
 		return
 	}
+	log.Println(c.Ctx.Request.Form["username"][0], "登陆-主页获取成功", response.Status)
 	cname = result.Find("#xhxm").Text()
 	cname = strings.TrimRight(cname, "同学")
 	//return &Info{Name: cname, Num: username}
