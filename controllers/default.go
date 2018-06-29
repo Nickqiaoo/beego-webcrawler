@@ -172,6 +172,9 @@ func (c *MainController) Querycredit() {
 	view, exits := result.Find("#Form1").Find("input").Eq(2).Attr("value")
 	if !exits {
 		fmt.Println("__VIEWSTATE获取失败")
+		c.TplName = "toevaluate.html"
+		return
+
 	}
 	//event, _ := result.Find("#__EVENTVALIDATION").Attr("value")
 	v := url.Values{}
@@ -255,6 +258,8 @@ func (c *MainController) Querygrade() {
 	view, exits := result.Find("#Form1").Find("input").Eq(2).Attr("value")
 	if !exits {
 		fmt.Println("__VIEWSTATE获取失败")
+		c.TplName = "toevaluate.html"
+		return
 	}
 	//event, _ := result.Find("#__EVENTVALIDATION").Attr("value")
 	v := url.Values{}

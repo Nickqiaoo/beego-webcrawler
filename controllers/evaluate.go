@@ -9,7 +9,6 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
-	//"fmt"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/axgle/mahonia"
