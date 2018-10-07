@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -80,7 +81,7 @@ func (c *MainController) Craw() {
 	encoder := mahonia.NewEncoder("gbk")
 	decoder := mahonia.NewDecoder("gbk")
 	but := encoder.ConvertString("学生")
-	v.Add("__VIEWSTATE", "dDwtNTE2MjI4MTQ7Oz6EbPZxwZLeI+vJ7sUQsX6GLavdSg==")
+	v.Add("__VIEWSTATE", "dDwxNTMxMDk5Mzc0Ozs+Z/4HcFs8ppzDjA3LEKdv34vgaQ4=")
 	v.Add("txtUserName", c.Ctx.Request.Form["username"][0])
 	v.Add("TextBox2", c.Ctx.Request.Form["password"][0])
 	v.Add("txtSecretCode", c.Ctx.Request.Form["yzm"][0])
@@ -89,7 +90,7 @@ func (c *MainController) Craw() {
 	v.Add("lbLanguage", "")
 	v.Add("hidPdrs", "")
 	v.Add("hidsc", "")
-	//v.Add("__EVENTVALIDATION", "/wEWDgKX/4yyDQKl1bKzCQLs0fbZDAKEs66uBwK/wuqQDgKAqenNDQLN7c0VAuaMg+INAveMotMNAoznisYGArursYYIAt+RzN8IApObsvIHArWNqOoPqeRyuQR+OEZezxvi70FKdYMjxzk=")
+	v.Add("__EVENTVALIDATION", "/wEWDgKX/4yyDQKl1bKzCQLs0fbZDAKEs66uBwK/wuqQDgKAqenNDQLN7c0VAuaMg+INAveMotMNAoznisYGArursYYIAt+RzN8IApObsvIHArWNqOoPqeRyuQR+OEZezxvi70FKdYMjxzk=")
 
 	//建立client发送POST请求
 	body := strings.NewReader(v.Encode())
