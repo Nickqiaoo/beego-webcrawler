@@ -16,6 +16,7 @@ import (
 
 // Evaluate 教学评价
 func (c *MainController) Evaluate() {
+	HTTPReqTotal.WithLabelValues("evaluate").Inc()
 	//初始化client
 	var course []string
 	jar, _ := cookiejar.New(nil)
