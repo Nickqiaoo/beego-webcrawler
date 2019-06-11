@@ -58,7 +58,7 @@ func (c *MainController) Evaluate() {
 	//获取所有课程
 	doc := decoder.NewReader(response.Body)
 	result, _ := goquery.NewDocumentFromReader(doc)
-	result.Find("div#headDiv").Find("ul.nav").Find("li.top").Eq(3).Find("ul.sub").Find("li").Each(func(i int, s *goquery.Selection) {
+	result.Find("div#headDiv").Find("ul.nav").Find("li.top").Eq(2).Find("ul.sub").Find("li").Each(func(i int, s *goquery.Selection) {
 		ref, a := s.Find("a").Attr("href")
 		if a == false {
 			log.Println("未找到课程列表")
